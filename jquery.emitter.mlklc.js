@@ -1,7 +1,7 @@
 /*
     // Emitter sprites factory with jQuery & CSS3 V0.4
     // by molokoloco@gmail.com 17/10/2011
-    // Infos : http://www.b2bweb.fr/emitter-sprites-particules-factory-with-jquery-css3
+    // Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
     // Live Demo V0.4 : http://jsfiddle.net/molokoloco/hDMKg/
     // Sources : https://github.com/molokoloco/jquery.emitter
 */

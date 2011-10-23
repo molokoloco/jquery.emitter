@@ -1,7 +1,7 @@
 Particules/Sprites emitter factory plugin with jQuery & CSS3 V0.4
 by molokoloco@gmail.com 23/10/2011 - MIT/GPL
 
-  * Infos : http://www.b2bweb.fr/emitter-sprites-particules-factory-with-jquery-css3
+  * Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
   * Sources : https://github.com/molokoloco/jquery.emitter
   * Plain demo : http://www.b2bweb.fr/framework/jquery.emitter/jquery.emitter.html
 
@@ -13,6 +13,7 @@ JsFiddle :
   * Demo V0.3c: http://jsfiddle.net/molokoloco/wRS8A/
   * Demo V0.4 : http://jsfiddle.net/molokoloco/hDMKg/
 
+{{{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Usage : Check $.fn.emitter.options for more infos
 // Emitter creation example, nearly full arguments list
@@ -47,3 +48,5 @@ var $emitter1 = $('div#emitterZone1').emitter({
         opacity           : 1
     }
 });    
+
+}}}
