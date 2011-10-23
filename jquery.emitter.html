@@ -1,0 +1,158 @@
+<!--// Remixed by @molokoloco 2011 - http://b2bweb.fr //-->
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="fr"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="description" content="" />
+	<meta name="viewport" content="width=720" />
+	<title>Emitter particules factory with jQuery & CSS3 V0.4</title>
+	<link rel="stylesheet" type="text/css" href="jquery.emitter.css">
+</head>
+<body>
+	
+	<div class="legend">
+		Emitter sprites factory with jQuery & CSS3 Transition
+	</div>
+
+	<div id="emitterZone1">
+		<!--// Here come the Sprites //-->
+	</div>
+	
+	<div class="legend">
+		<div style="float:right;"><a href="javascript:void(0);" id="start">Start</a> | 
+		<a href="javascript:void(0);" id="stop">Stop</a></div>Live edit plugin funny properties !
+	</div>
+	
+	<a href="https://github.com/molokoloco/jquery.emitter" target="_blank" title="Fork me on GitHub" class="ribbon"><img src="http://www.b2bweb.fr/bonus/jx/images/github-ribbon.png" alt="GitHub" width="100" height="100"></a>
+	
+	<script src="http://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+	<!-- Emitter Plugin : ".min" for minimified version -->
+	<script src="jquery.emitter.mlklc.min.js" type="text/javascript"></script>
+	<!-- For the demo editor : easy incrementation of values in a textarea -->
+	<script src="incrementable.leaverou.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+$(function() { // PAGE DOM READY
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Particules Emitter factory plugin with jQuery & CSS3 V0.4
+	// Check $.fn.emitter.options for more infos
+	// Emitter creation example, nearly full arguments list
+    // Be sure to choose border, background, etc if you want to see something
+	
+    var emitter1Options = {
+			//effect          : 'nebula',    // Implement your custom effect !
+			element           : '<div></div>',
+			transition        : 'all 3000ms cubic-bezier(.2, .1, .9, 0)', // CSS Animation, keep delay in "ms"
+			newAtTop          : 'random',    // Last element appear in top of others : 'random' OR bolean
+			emitterRadius     : 16,          // '10px' or '50%' // Radius of emitter
+			emitterCenterLeft : '50%',       // '10px' or '50%' // Default to the center of the box
+			emitterCenterTop  : '50%',
+			rate              : 25,          // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
+			maxSprite         : 90,          // Max sprites at one moment
+			cssFrom           : {            // Properties managed with plugin Effect : marginTop, marginLeft, top, left, z-index
+                                             // Other CSS properties allowed, plugin add the correct browser-prefix if needed
+				width             : '8',     // '10', '10px' or '50%' // Radius of a sprite
+				maxSize           : '16',    // Custom plugin propertie, randomize size between width and maxSize ?
+				//transform       : 'rotate(180deg) scale(5) skew(-10deg,10deg)',
+				backgroundColor   : 'none',  // 'rgba(255, 255, 0, 1)',
+				backgroundImage   : '-'+$.getBrowser+'-radial-gradient(33% 33%, circle cover,rgba(230,230,250,1) 25%,rgba(50,50,70,1) 80%)', // 'url()' or '-moz-radial-gradient()'
+				boxShadow         : '0 0 10px rgba(0,0,0,1)',
+				border            : 'none',  // '1px dashed rgb(0,0,0)', // buggus with alpha
+				borderRadius      : '50%',   // '10px' or '50%' // Default round with half size radius
+				opacity           : 1
+			},
+			cssTo             : {            // All the "cssFrom" properties are usable
+				width             : '20',
+				maxSize           : '60%',   // Ex. 60% >> random width between 20px and 60% of the box size
+				borderRadius      : '50%',   // Round
+				opacity           : 1
+			}
+		},
+		$emitter1 = $('div#emitterZone1').emitter(emitter1Options);	
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Links for controlling emitter
+    $('a#start,a#stop').click(function() {
+        $emitter1.trigger(this.id); // start || stop
+    });
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Catch new Sprite emit event and display stats (only for the demo)
+	// Inspired from https://github.com/mrdoob/stats.js
+	var now = Date.now(),
+		T = {frames:0, time:now, timeLastSecond:now, fps:0},
+		$stat = $('<span id="sps" title="Sprites/Seconds"></span>').appendTo($emitter1);
+	
+	// Bind our emittor, don't need element so comment
+	$emitter1.bind('emit', function(/* e, $sprite */) { 
+		T.time = Date.now();
+		T.frames ++;
+		if (T.time > T.timeLastSecond + 1000) {
+			T.fps = Math.round((T.frames * 1000) / (T.time - T.timeLastSecond));
+			$('span#sps').html(T.fps+'/s');
+			T.timeLastSecond = T.time;
+			T.frames = 0;
+		}
+	});
+    
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Move the emitterCenter, when mouse is over
+    var offset = $emitter1.offset(),
+        mouseIsMove = function(evt) {
+            $emitter1.trigger('update', [{ // Pass data through event callback
+                emitterCenterLeft : evt.pageX - offset.left,
+                emitterCenterTop : evt.pageY - offset.top
+            }]);
+        },
+        mouseIsEnter = function(evt) {
+            $emitter1.bind('mousemove', mouseIsMove);
+        },
+        mouseIsLeave = function(evt) {
+            $emitter1.unbind('mousemove', mouseIsMove);
+            $emitter1.trigger('update', [{ // Reset
+                emitterCenterLeft : parseInt($emitter1.width(), 10) / 2,
+                emitterCenterTop : parseInt($emitter1.height(), 10) / 2
+            }]);
+        };
+	
+    $emitter1.bind({
+        mouseenter:mouseIsEnter,
+        mouseleave:mouseIsLeave
+    });
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+    // EMITTER LIVE EDITOR (only for the demo) ////////////////////////////////////////////////////////
+	
+	// Convert options object to string
+	var options2text = '';
+	for (var k in emitter1Options) {
+		if (typeof emitter1Options[k] == 'object') {
+			options2text += '\t'+k+': {\n';
+			for (var j in emitter1Options[k])
+				options2text += '\t\t'+j+':\''+emitter1Options[k][j]+'\',\n';
+			options2text = options2text.substr(0, options2text.length - 2)+'\n';
+			options2text += '\t},\n';
+		} else options2text += '\t'+k+': \''+emitter1Options[k]+'\',\n';
+	}
+	options2text = options2text.substr(0, options2text.length - 2)+'\n';
+	// Update
+	var updateEmitter = function(event) {
+			try { eval($(this).val()+';'); } // Security fail... ok
+			catch(e) {}
+			if (options) $emitter1.trigger('update', [options]);
+		};
+	// Append Editor with options as text
+	$editor = $('<textarea id="options" title="Live edit ! Tips : Up/Down arrow to inc values">var options = {\n'+options2text+'\n};</textarea>')
+		.bind('keyup', updateEmitter)
+		.appendTo('body');
+	if (window.Incrementable) new Incrementable($editor.get(0));
+	
+});
+
+</script>
+
+</body>
+</html>
