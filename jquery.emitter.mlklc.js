@@ -55,7 +55,8 @@
     // See http://jsfiddle.net/molokoloco/f6Z3D/
     $.cssPrefixString = {};
     $.cssPrefix = function(propertie) {
-        if ($.cssPrefixString[propertie] || $.cssPrefixString[propertie] === '') return $.cssPrefixString[propertie] + propertie;
+        if ($.cssPrefixString[propertie] || $.cssPrefixString[propertie] === '')
+            return $.cssPrefixString[propertie] + propertie;
         var e = document.createElement('div');
         var prefixes = ['', 'Moz', 'Webkit', 'O', 'ms', 'Khtml']; // Various browsers...
         for (var i in prefixes) {
@@ -149,15 +150,16 @@
             // Create new element
             var addSprite = function() {
                 
-                if (window.numSprites < options.maxSprite) { // DOM security, if rate is short and transition long
+                // DOM security, if rate is short and transition long
+                if (window.numSprites < options.maxSprite) { 
                     // Starting CSS for sprite, add element inside (default centered) emitter radius
-                    // Random size ?
-                    P.spriteWidth   = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
-                                       $.getRand(options.cssFrom.width, options.cssFrom.maxSize) : // Randomize
+                    P.spriteWidth   = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ? // Randomize ?
+                                       $.getRand(options.cssFrom.width, options.cssFrom.maxSize) :
                                        options.cssFrom.width);
-                    P.spriteHeight  = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
-                                       P.spriteWidth : 
-                                       (options.cssFrom.height ? options.cssFrom.height : options.cssFrom.width));
+                    P.spriteHeight  = (options.cssFrom.height || options.cssFrom.height === 0 ?
+                                      (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
+                                       $.getRand(options.cssFrom.height , options.cssFrom.maxSize) : // Randomize
+                                       options.cssFrom.height) : P.spriteWidth);
                     P.halfWidth     = P.spriteWidth / 2;
                     P.halfHeight    = P.spriteHeight / 2;
                     // Randomize z-index ?
@@ -201,13 +203,14 @@
                                                    options.cssTo.width);
                                 P.halfWidth     = P.spriteWidth / 2; // Update
                                 P.borderRadius  = P.halfWidth+'px'; // Default round
-                                P.spriteHeight  = P.spriteWidth; 
+                                P.spriteHeight  = P.spriteWidth;
+                                P.halfHeight    = P.spriteHeight / 2;
                             }
                             
                             if (options.cssTo.height || options.cssTo.height === 0) { // Or let the start size
-                                P.spriteHeight  = (options.cssTo.maxSize || options.cssTo.maxSize === 0 ?
-                                                   P.spriteWidth :
-                                                   (options.cssTo.height ? options.cssTo.height : options.cssTo.width));
+                                P.spriteHeight  = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
+                                                   $.getRand(options.cssTo.height, options.cssTo.maxSize) :
+                                                   options.cssFrom.height);
                                 P.halfHeight     = P.spriteHeight / 2;
                             }
                               
@@ -276,7 +279,7 @@
                 P = {}; // Reset
 
                if (options.rate)  E.timer = setTimeout(addSprite, options.rate); // And do it again
-               else if (E.render) window.requestAnimFrame(addSprite); // As fast as possible // Waiting a "maxSpeed" param :-?
+               else if (E.render) window.requestAnimFrame(addSprite); // As fast as possible - Waiting a "maxSpeed" param :-?
             };
             
             // Public events methods
