@@ -1,10 +1,30 @@
 /*
     // Emitter sprites factory with jQuery & CSS3 V0.4
-    // by molokoloco@gmail.com 17/10/2011
+    // @author molokoloco@gmail.com 28/10/2011 - MIT License
+    //
     // Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
     // Live Demo V0.4 : http://jsfiddle.net/molokoloco/hDMKg/
+    // Live Demo V0.5 : http://jsfiddle.net/molokoloco/bGG6f/
     // Sources : https://github.com/molokoloco/jquery.emitter
+    
+    // Minimalist settings, see explanations in sources comments
+    // Ex. :
+    
+    $emitter1 = $('div#emitterZone1').emitter({
+        effect     : 'nebula',
+        transition : 'all 3000ms cubic-bezier(.2, .1, .9, 0)',
+        cssFrom    : {
+            width            : 25,
+            backgroundColor  : 'rgba(255, 255, 0, 1)',
+            boxShadow        : '0 0 10px rgba(0,0,0,1)',
+        },
+        cssTo      : {
+            opacity          : 0
+        }
+    });
+    $('a#stop').click(function() { $emitter1.trigger('stop'); });
 */
+
 
 ;var db = function() { 'console' in window && console.log.call(console, arguments); }; // Debuging tool
 
@@ -92,7 +112,6 @@
     
     // Emitter jQuery plugin // EXTEND JQUERY functions on "element"
     $.fn.emitter = function(options) {
-        // db('Init $sprite()', options);
         
         // Deep merge options with defaut (ex. options.cssFrom)
         for (var k in options)
@@ -100,27 +119,26 @@
                 options[k] = $.extend({}, $.fn.emitter.options[k], options[k]);
         
         // Merge new with default
-        options = $.extend({}, $.fn.emitter.options, options);
+        options = $.extend({}, $.fn.emitter.options, options); // Do not change original so came {}
+        //db('Init $emitter()', options); // Debug with console.log
         
         return this.each(function() {
             
-            var $canvas   = $(this),
-                E         = {},   // Emitter properties
-                P         = {};   // Sprites properties
+            var $canvas    = $(this),    // This is the element for witch the plugin apply
+                E          = {},         // Emitter properties
+                S          = {};         // Sprites properties
             
-            E.delay       = 1000; // Later..
-            E.render      = true; // Continuous requestAnimation ?
-            E.timer       = null; // setInterval ?
+            E.name         = 'emitter'+Date.now(); // Plugin element unique ID in window namespace
+            E.render       = true;       // Continuous requestAnimation ?
+            E.timer        = null;       // setInterval ?
+            E.eventEnd     = $.getBrowser.toLowerCase()+'TransitionEnd';
             
-            window.numSprites = 0;// Global number of elements
+            window[E.name] = [];         // Stock all sprites $element
             
             var fixDefaultSizes = function() {
-                E.canvasW = parseInt($canvas.width());
-                E.canvasH = parseInt($canvas.height());
-                    
-                // Extract delay from CSS transition:'all 3000ms linear';
-                if (options.transition) 
-                    E.delay                    = options.transition.split('ms')[0].split(' ')[1]; 
+                E.canvasW = parseInt($canvas.width(), 10);
+                E.canvasH = parseInt($canvas.height(), 10);
+                
                 // Emite from the center of the box by default
                 if (!options.emitterCenterLeft && options.emitterCenterLeft !== 0)
                      options.emitterCenterLeft = E.canvasW / 2;
@@ -128,6 +146,7 @@
                 if (!options.emitterCenterTop && options.emitterCenterTop !== 0)
                      options.emitterCenterTop  = E.canvasH / 2;
                 else options.emitterCenterTop  = $.getSize(options.emitterCenterTop, E.canvasH);
+                
                 // Convert % or px to (int)
                 if (options.emitterRadius)
                     options.emitterRadius      = $.getSize(options.emitterRadius, E.canvasW);
@@ -147,136 +166,153 @@
             
             fixDefaultSizes();
             
+            // Apply ending CSS (Apply transition at this moment)
+            var applyCssEnd = function(name_, index_, cssEnd_) {
+                window[name_][index_].crossCss(cssEnd_); 
+                // Wait the end event of CSS transition : transitionend || webkitTransitionEnd ...
+                window[name_][index_].bind(E.eventEnd+' transitionend', function() { 
+                    window[name_][index_].unbind(E.eventEnd+' transitionend');
+                    window[name_][index_].attr('style', '');  // Reset all styles (& transition)
+                    $.data(window[name_][index_], 'used', 0); // Release element 
+                });
+            };
+            
             // Create new element
             var addSprite = function() {
                 
-                // DOM security, if rate is short and transition long
-                if (window.numSprites < options.maxSprite) { 
+                // Did we got a element that is not in use in our Array ?
+                S.index = -1;
+                for (var i = 0; i < options.maxSprite; i++) {
+                    if (!window[E.name][i] || !$.data(window[E.name][i], 'used')) { 
+                        S.index = i;
+                        break;
+                    }
+                }
+                
+                if (S.index >= 0) { // Find an empty place into our maxSprite elements ?
+                    
                     // Starting CSS for sprite, add element inside (default centered) emitter radius
-                    P.spriteWidth   = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ? // Randomize ?
+                    S.spriteWidth   = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ? // Randomize ?
                                        $.getRand(options.cssFrom.width, options.cssFrom.maxSize) :
                                        options.cssFrom.width);
-                    P.spriteHeight  = (options.cssFrom.height || options.cssFrom.height === 0 ?
+                    S.spriteHeight  = (options.cssFrom.height || options.cssFrom.height === 0 ?
                                       (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
                                        $.getRand(options.cssFrom.height , options.cssFrom.maxSize) : // Randomize
-                                       options.cssFrom.height) : P.spriteWidth);
-                    P.halfWidth     = P.spriteWidth / 2;
-                    P.halfHeight    = P.spriteHeight / 2;
+                                       options.cssFrom.height) : S.spriteWidth);
+                    S.halfWidth     = S.spriteWidth / 2;
+                    S.halfHeight    = S.spriteHeight / 2;
                     // Randomize z-index ?
-                    P.zIndex        = (options.newAtTop == 'random' ?
+                    S.zIndex        = (options.newAtTop == 'random' ?
                                        $.getRand(options.zIndex, options.zIndex + options.maxSprite) :
-                                      (options.newAtTop ? options.zIndex++ : options.zIndex--) ); // !!! if < 0 ^^
+                                      (options.newAtTop ? /* options.zIndex++ */null : options.zIndex--) ); // null : let by default, !!! if < 0 ^^
                     // Sprite are placed with left top on the emitter and centered / moved with margins
-                    P.marginLeft    = -P.halfWidth + $.getRand(-options.emitterRadius, options.emitterRadius);
+                    S.marginLeft    = -S.halfWidth + $.getRand(-options.emitterRadius, options.emitterRadius);
                     
-                    P.marginTop     = -P.halfHeight + $.getRand(-options.emitterRadius, options.emitterRadius);
+                    S.marginTop     = -S.halfHeight + $.getRand(-options.emitterRadius, options.emitterRadius);
                     // Rounded sprite by default
-                    P.borderRadius  = (options.cssFrom.borderRadius || options.cssFrom.borderRadius === 0 ?
-                                       options.cssFrom.borderRadius : P.halfWidth+'px');
+                    S.borderRadius  = (options.cssFrom.borderRadius || options.cssFrom.borderRadius === 0 ?
+                                       options.cssFrom.borderRadius : S.halfWidth+'px');
                     
                     // Sprite minimal CSS object
-                    P.cssStart = $.extend({}, options.cssFrom, { // Processed params merge with config
+                    S.cssStart = $.extend({}, options.cssFrom, { // Processed params merge with config
                         // No anim
                         position    : options.position,
-                        transition  : options.transition,
-                        zIndex      : P.zIndex,
+                        zIndex      : S.zIndex,
                         // Animable
                         left        : options.emitterCenterLeft+'px',
                         top         : options.emitterCenterTop+'px',
-                        marginLeft  : P.marginLeft+'px',
-                        marginTop   : P.marginTop+'px',
-                        width       : P.spriteWidth+'px',
-                        height      : P.spriteHeight+'px',
-                        borderRadius: P.borderRadius
+                        marginLeft  : S.marginLeft+'px',
+                        marginTop   : S.marginTop+'px',
+                        width       : S.spriteWidth+'px',
+                        height      : S.spriteHeight+'px',
+                        borderRadius: S.borderRadius // ...
                     });
                     
+                    // Generate S.cssEnd CSS
                     // Animate sprites in the pseudo canvas, with the help of CSS transition
-                    // Sprite are created arount emitter center, now they need dispatching
-                    // Generate P.cssEnd CSS
+                    // Sprite are created within emitter center radius, now they need dispatching
+                    
+                    if (options.cssTo.width || options.cssTo.width === 0) { // Or let the start size
+                        S.spriteWidth   = (options.cssTo.maxSize || options.cssTo.maxSize === 0 ?
+                                           $.getRand(options.cssTo.width, options.cssTo.maxSize) :
+                                           options.cssTo.width);
+                        S.halfWidth     = S.spriteWidth / 2; // Update
+                        S.borderRadius  = S.halfWidth+'px'; // Default round
+                        S.spriteHeight  = S.spriteWidth;
+                        S.halfHeight    = S.spriteHeight / 2;
+                    }
+                    
+                    if (options.cssTo.height || options.cssTo.height === 0) { // Or let the start size
+                        S.spriteHeight  = (options.cssTo.maxSize || options.cssTo.maxSize === 0 ?
+                                           $.getRand(options.cssTo.height, options.cssTo.maxSize) :
+                                           options.cssTo.height);
+                        S.halfHeight     = S.spriteHeight / 2;
+                    }
+                      
+                    // Rounded sprite by default
+                    S.borderRadius      = (options.cssTo.borderRadius || options.cssTo.borderRadius === 0 ?
+                                           options.cssTo.borderRadius : S.borderRadius); // Default keep cssFrom
+                    
+                    // Effect Dispatch sprites // Do yours !!! plenty of  properties...
                     switch(options.effect) {
-                        case 'nebula': // RANDOMLY dispatch sprites 
-                            
-                            // Ending CSS for sprite
-                            if (options.cssTo.width || options.cssTo.width === 0) { // Or let the start size
-                                P.spriteWidth   = (options.cssTo.maxSize || options.cssTo.maxSize === 0 ?
-                                                   $.getRand(options.cssTo.width, options.cssTo.maxSize) :
-                                                   options.cssTo.width);
-                                P.halfWidth     = P.spriteWidth / 2; // Update
-                                P.borderRadius  = P.halfWidth+'px'; // Default round
-                                P.spriteHeight  = P.spriteWidth;
-                                P.halfHeight    = P.spriteHeight / 2;
-                            }
-                            
-                            if (options.cssTo.height || options.cssTo.height === 0) { // Or let the start size
-                                P.spriteHeight  = (options.cssFrom.maxSize || options.cssFrom.maxSize === 0 ?
-                                                   $.getRand(options.cssTo.height, options.cssTo.maxSize) :
-                                                   options.cssFrom.height);
-                                P.halfHeight     = P.spriteHeight / 2;
-                            }
-                              
-                            // Rounded sprite by default
-                            P.borderRadius      = (options.cssTo.borderRadius || options.cssTo.borderRadius === 0 ?
-                                                   options.cssTo.borderRadius : P.borderRadius);
-                                
-                            // Sprites end Outside the border of the box container
-                            P.marginLeftMin     = -options.emitterCenterLeft - P.spriteWidth;
-                            P.marginTopMin      = -options.emitterCenterTop - P.spriteHeight;
-                            P.marginLeftMax     = E.canvasW - options.emitterCenterLeft;
-                            P.marginTopMax      = E.canvasH - options.emitterCenterTop;
-                                
-                            // Sprites end Inside the border of the box container
-                            /* P.marginLeftMin  = -options.emitterCenterLeft;
-                            P.marginTopMin      = -options.emitterCenterTop;
-                            P.marginLeftMax     = E.canvasW - options.emitterCenterLeft - P.spriteWidth;
-                            P.marginTopMax      = E.canvasH - options.emitterCenterTop - P.spriteHeight; */
-                            
-                            if (Math.random() > 0.5) {
-                                P.marginLeftEnd = $.getRand(P.marginLeftMin, P.marginLeftMax);
-                                P.marginTopEnd  = (Math.random() < 0.5 ? P.marginTopMin : P.marginTopMax);
-                            }
-                            else {
-                                P.marginLeftEnd = (Math.random() < 0.5 ? P.marginLeftMin : P.marginLeftMax);
-                                P.marginTopEnd  = $.getRand(P.marginTopMin, P.marginTopMax);
-                            }
-                            
-                            P.cssEnd = $.extend({}, options.cssTo, { // Processed params merge with config
-                                width        : P.spriteWidth+'px',
-                                height       : P.spriteHeight+'px',
-                                borderRadius : P.borderRadius, // not optional because we want this properties automated
-                                marginLeft   : P.marginLeftEnd+'px',
-                                marginTop    : P.marginTopEnd+'px'
-                           });  
-                           
+                        case 'artifice': // Sprites end Inside the border of the box container
+                            S.marginLeftMin  = -options.emitterCenterLeft;
+                            S.marginTopMin   = -options.emitterCenterTop;
+                            S.marginLeftMax  = E.canvasW - options.emitterCenterLeft - S.spriteWidth;
+                            S.marginTopMax   = E.canvasH - options.emitterCenterTop - S.spriteHeight;
                         break;
-                        
-                        default: // Do yours !!!
-                            P.cssEnd = $.extend({}, options.cssTo);
+                        case 'nebula': // Sprites end Outside the border of the box container
+                        default:
+                            S.marginLeftMin  = -options.emitterCenterLeft - S.spriteWidth;
+                            S.marginTopMin   = -options.emitterCenterTop - S.spriteHeight;
+                            S.marginLeftMax  = E.canvasW - options.emitterCenterLeft;
+                            S.marginTopMax   = E.canvasH - options.emitterCenterTop;
                         break;
                     }
                     
-                    // SPRITE CORE ///////////////////////////////////////////////////////////////////////
-                    // Todo : use a cache object and recycling elements
-                    P.$sprite = $(options.element)// Create a new styled sprite
-                        .crossCss(P.cssStart) // Cross browser css
-                        .appendTo($canvas);
-                    window.numSprites++;
+                    if (options.effect == 'artifice' || options.effect == 'nebula') {
+                        if (Math.random() > 0.5) {
+                            S.marginLeftEnd = $.getRand(S.marginLeftMin, S.marginLeftMax);
+                            S.marginTopEnd  = (Math.random() < 0.5 ? S.marginTopMin : S.marginTopMax);
+                        }
+                        else {
+                            S.marginLeftEnd = (Math.random() < 0.5 ? S.marginLeftMin : S.marginLeftMax);
+                            S.marginTopEnd  = $.getRand(S.marginTopMin, S.marginTopMax);
+                        }
+                    }
                     
-                    // If someone outside want to catch our event particule...
-                    $canvas.trigger('emit', [P.$sprite]); // $canvas.bind('emit', function(e, $sprite) {});
+                    // Processed params merge with config
+                    S.cssEnd = $.extend({}, options.cssTo, { 
+                        transition   : options.transition, // ANIMATION :)
+                        width        : S.spriteWidth+'px',
+                        height       : S.spriteHeight+'px',
+                        borderRadius : S.borderRadius,     // Not optional, we want this properties automated
+                        marginLeft   : S.marginLeftEnd+'px',
+                        marginTop    : S.marginTopEnd+'px'
+                   });
+                    
+                    // SPRITE CORE ///////////////////////////////////////////////////////////////////////
+                    
+                    // Need to CREATE a new sprite element ?
+                    if (!window[E.name][S.index] || window[E.name][S.index].length < 1)
+                         window[E.name][S.index] = $(options.element).appendTo($canvas);
+                    
+                    // In use now !
+                    $.data(window[E.name][S.index], 'used', 1); 
+                    
+                    // Apply cross-browsers CSS+
+                    window[E.name][S.index].crossCss(S.cssStart);
+                    
+                    // If someone outside want to catch our event particule before it move...
+                    $canvas.trigger('emit', [window[E.name][S.index]]); // $canvas.bind('emit', function(e, $sprite) {});
                     
                     // Wait DOM init with Timeout (even 0), move the element to final location
                     // and wait the magical GPU transition from CSS before removing element
-                    setTimeout(function($sprite_, cssEnd_) {
-                        $sprite_.crossCss(cssEnd_); // Apply
-                        setTimeout(function($sprite__) {
-                            $sprite__.remove(); // Todo : release this element and give back for a new one
-                            window.numSprites--;
-                        }, E.delay, $sprite_);
-                    }, 0, P.$sprite, P.cssEnd); // Pass new css
+                    setTimeout(applyCssEnd, 0, E.name, S.index, S.cssEnd); // Pass new css + apply trans
                 }
-
-                // db(P.cssStart, P.cssEnd);  return;
-                P = {}; // Reset
+                
+                //  db(S.cssStart, S.cssEnd);  return;
+                S = {}; // Reset
 
                if (options.rate)  E.timer = setTimeout(addSprite, options.rate); // And do it again
                else if (E.render) window.requestAnimFrame(addSprite); // As fast as possible - Waiting a "maxSpeed" param :-?
@@ -303,6 +339,7 @@
                 // Update one or more values while processing sprite
                 update:function(event, newOptions) { //  $emitter1.trigger('update', [options]);
                     // Deep merge options with current (ex. options.cssFrom)
+                    // if incomplete new sub-array : keep default
                     for (var k in newOptions)
                         if (typeof newOptions[k] == 'object' && $.fn.emitter.options[k])
                             newOptions[k] = $.extend({}, options[k], newOptions[k]);
@@ -322,8 +359,8 @@
     
     $.fn.emitter.options = { // Public default minimal options values
         // Seeder ANIM
-        effect            : 'nebula',  // Add your custom effect !
-        transition        : 'all 1000ms linear', // CSS Animation, keep delay in "ms" 
+        effect            : 'nebula',  // 'nebula' or 'artifice' // Add your custom effect !
+        transition        : 'all 1000ms linear', // CSS Animation
         newAtTop          : 'random',  // Last element appear in top of others : 'random' OR bolean
         emitterRadius     : 0,         // '10px' or '50%' // Radius of emitter
         emitterCenterLeft : null,      // '10px' or '50%' // Default to the center of the box
@@ -336,9 +373,9 @@
         zIndex            : 500,       // Starting index for sprites
         cssFrom           : {          // Properties managed with plugin Effect : marginTop, marginLeft, top, left, z-index
                                        // Other CSS properties allowed, plugin add the correct browser-prefix if needed
-            width         : '10%',     // '10px' or '50%' // Radius of a sprite : Minimal setting
+            width         : '10%',     // 10, '10px' or '50%' // Radius of a sprite : Minimal setting
                                        // By default, height is the width, borderRadius is half size (rounded)
-            maxSize       : null       // Custom plugin propertie, randomize size between width and maxSize ?
+            maxSize       : null       // Custom plugin propertie (with "effect"), randomize size between width and maxSize ?
         },
         cssTo             : {}         // Depend on "effect" but nothing else move by default, all css properties allowed...
     };

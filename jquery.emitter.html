@@ -25,56 +25,209 @@
         <a href="javascript:void(0);" id="stop">Stop</a></div>Live edit plugin funny properties !
     </div>
     
-    <a href="https://github.com/molokoloco/jquery.emitter" target="_blank" title="Fork me on GitHub" class="ribbon"><img src="http://www.b2bweb.fr/bonus/jx/images/github-ribbon.png" alt="GitHub" width="100" height="100"></a>
+    <div id="edit">
+        <!--// Here come the Editor (demo) //-->
+    </div>
     
-    <script src="http://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
-    <!-- Emitter Plugin : ".min" for minimified version -->
-    <script src="jquery.emitter.mlklc.min.js" type="text/javascript"></script>
-    <!-- For the demo editor : easy incrementation of values in a textarea -->
+     <div class="legend tips">
+         Tips : Up/Down arrow to inc values<br />
+         Add your properties, set unwanted existing ones to "null" (live editor constrain)<br />
+         transition : 'all 3000ms linear' is more fast than 'cubic-bezier()'<br />
+         gradient, boxShadow, opacity, borderRadius are CPU consumming<br />
+    </div>
+   
+    <a href="https://github.com/molokoloco/jquery.emitter" target="_blank" title="Fork me on GitHub" class="ribbon">
+        <img src="http://www.b2bweb.fr/bonus/jx/images/github-ribbon.png" alt="GitHub" width="100" height="100">
+    </a>
+    
+    <!-- jQuery + Emitter Plugin : ".min" for minimified version -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+    <script src="jquery.emitter.mlklc.js" type="text/javascript"></script>
+    <!-- For the demo : easy incrementation of values in a textarea editor -->
     <script src="incrementable.leaverou.js" type="text/javascript"></script>
+    
     <script type="text/javascript">
 
 $(function() { // PAGE DOM READY
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Particules Emitter factory plugin with jQuery & CSS3 V0.4
+    // Particules Emitter factory plugin with jQuery & CSS3 V0.4 - molokoloco 2011 http://b2bweb.fr
     // Check $.fn.emitter.options for more infos
-    // Emitter creation example, nearly full arguments list
     // Be sure to choose border, background, etc if you want to see something
     // Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    var emitter1Options = {
-            //effect          : 'nebula',    // Implement your custom effect !
-            element           : '<div></div>',
-            transition        : 'all 3000ms cubic-bezier(.2, .1, .9, 0)', // CSS Animation, keep delay in "ms"
-            newAtTop          : 'random',    // Last element appear in top of others : 'random' OR bolean
-            emitterRadius     : 16,          // '10px' or '50%' // Radius of emitter
-            emitterCenterLeft : '50%',       // '10px' or '50%' // Default to the center of the box
-            emitterCenterTop  : '50%',
-            rate              : 25,          // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
-            maxSprite         : 90,          // Max sprites at one moment
-            cssFrom           : {            // Properties managed with plugin Effect : marginTop, marginLeft, top, left, z-index
-                                             // Other CSS properties allowed, plugin add the correct browser-prefix if needed
-                width             : '8',     // '10', '10px' or '50%' // Radius of a sprite
-                maxSize           : '16',    // Custom plugin propertie, randomize size between width and maxSize ?
-                //transform       : 'rotate(180deg) scale(5) skew(-10deg,10deg)',
-                backgroundColor   : 'none',  // 'rgba(255, 255, 0, 1)',
-                backgroundImage   : '-'+$.getBrowser+'-radial-gradient(33% 33%, circle cover,rgba(230,230,250,1) 25%,rgba(50,50,70,1) 80%)', // 'url()' or '-moz-radial-gradient()'
-                boxShadow         : '0 0 10px rgba(0,0,0,1)',
-                border            : 'none',  // '1px dashed rgb(0,0,0)', // buggus with alpha
-                borderRadius      : '50%',   // '10px' or '50%' // Default round with half size radius
-                opacity           : 1
-            },
-            cssTo             : {            // All the "cssFrom" properties are usable
-                width             : '20',
-                maxSize           : '60%',   // Ex. 60% >> random width between 20px and 60% of the box size
-                borderRadius      : '50%',   // Round
-                opacity           : 1
-            }
+    // Some options presets...
+    var optionsPresets = {};
+    
+    optionsPresets.molecules = { // EXAMPLE #1
+        // EMITTER TYPE
+        effect            : 'nebula',    // 'nebula' or 'artifice'    // Add your custom effect !
+        transition        : 'all 3000ms cubic-bezier(.2, .1, .9, 0)', // CSS Animation
+        newAtTop          : 'random',    // Last element appear in top of others : 'random' OR bolean
+        rate              : 0,           // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
+        maxSprite         : 100,         // Max sprites at one moment (Each sprite is a new DOM element)
+        emitterRadius     : 16,          // 10, '10px' or '50%' // Radius of emitter
+        emitterCenterLeft : '50%',       // 10, '10px' or '50%' // Default to the center of the box
+        emitterCenterTop  : '50%',
+        // SPRITES HTML & CSS
+        element           : '<div class="sprite"></div>',             // Default sprite is a div
+        cssFrom           : {            // Properties managed with plugin Effect : marginTop, marginLeft, top, left, z-index
+                                         // Other CSS properties allowed, plugin add the correct browser-prefix if needed
+            width             : 8,       // '10', '10px' or '50%' // Radius of a sprite
+            height            : null,
+            maxSize           : 16,      // Custom plugin propertie, randomize size between width and maxSize ?
+            transform         : null,    // 'rotate(180deg) scale(5) translateX(10px, 0px) skew(-10deg,10deg)',
+            backgroundColor   : null,    // 'rgba(255, 255, 0, 1)',
+            backgroundImage   : '-'+$.getBrowser+'-radial-gradient(33% 33%, circle cover,rgba(230,230,250,1) 25%,rgba(50,50,70,1) 80%)', // 'url()' or '-moz-radial-gradient()'
+            maskImage         : null,    // gradient, color, ...
+            boxShadow         : '0 0 10px rgba(0,0,0,1)',
+            border            : null,    // '1px dashed rgb(0,0,0)', // buggus with alpha
+            borderRadius      : '50%',   // '10px' or '50%' // Default round with half size radius
+            opacity           : 1
         },
-        $emitter1 = $('div#emitterZone1').emitter(emitter1Options);    
+        cssTo             : {            // All the "cssFrom" properties are usable
+            width             : 20,
+            height            : null,
+            maxSize           : '60%',   // Ex. 60% >> random width between 20px and 60% of the box size
+            borderRadius      : '50%',   // Round
+            opacity           : 1
+        }
+    }; // Default
+        
+    optionsPresets.acidSquares = {
+        effect: 'artifice',
+    	transition: 'all 2600ms linear',
+    	newAtTop: true,
+    	rate: 0,
+    	maxSprite: 250,
+    	emitterRadius: '100%',
+    	emitterCenterLeft: '50%',
+    	emitterCenterTop: '50%',
+    	element: '<div></div>',
+    	cssFrom: {
+    		width: 200,
+            height: 200,
+    		maxSize: null,
+    		transform: 'rotate(45deg)',
+    		backgroundColor: 'rgba(195,216,37,0.1)',
+    		backgroundImage: null,
+    		maskImage: null,
+    		boxShadow: null,
+    		border: '1px solid yellow',
+    		borderRadius: 0,
+    		opacity: null
+    	},
+    	cssTo: {
+    		width: null,
+    		maxSize: null,
+    		borderRadius: null,
+    		opacity: 0
+    	}
+    };
+    
+    optionsPresets.hyperspace = {
+    	effect: 'nebula',
+    	transition: 'all 600ms linear',
+    	newAtTop: true,
+    	rate: 0,
+    	maxSprite: 500,
+    	emitterRadius: 5,
+    	emitterCenterLeft: '50%',
+    	emitterCenterTop: '75%',
+    	element: '<div></div>',
+    	cssFrom: {
+    		width: 1,
+            height: null,
+    		maxSize: null,
+    		transform: null,
+    		backgroundColor: 'yellow',
+    		backgroundImage: null,
+    		maskImage: null,
+    		boxShadow: null,
+    		border: null,
+    		borderRadius: 0,
+    		opacity: null
+    	},
+    	cssTo: {
+    		width: null,
+            height: null,
+    		maxSize: null,
+    		borderRadius: null,
+    		opacity: null
+    	}
+    };
+    
+    optionsPresets.deepSun = {
+    	effect: 'artifice',
+    	transition: 'all 4000ms ease-in-out',
+    	newAtTop: 'random',
+    	rate: 0,
+    	maxSprite: 16,
+    	emitterRadius: 50,
+    	emitterCenterLeft: '50%',
+    	emitterCenterTop: '50%',
+    	element: '<div></div>',
+    	cssFrom: {
+    		width: 200,
+            height: null,
+    		maxSize: 250,
+    		transform: null,
+    		backgroundColor: null,
+    		backgroundImage: '-'+$.getBrowser+'-radial-gradient(40% 40%, circle cover,rgba(230,240,163,0) 0%, rgba(210,230,56,1) 90%, rgba(195,216,37,0) 100%)',
+    		maskImage: null,
+    		boxShadow: '0 0 30px rgba(219,240,67,1)',
+    		border: null,
+    		borderRadius: '50%',
+    		opacity: null
+    	},
+    	cssTo: {
+    		width: 600,
+            height: null,
+    		maxSize: null,
+    		borderRadius: 600,
+    		opacity: 0
+    	}
+    };
+    
+    optionsPresets.rainBowArrow = {
+    	effect: 'artifice',
+    	transition: 'all 7000ms cubic-bezier(1, 1, 0, 0)',
+    	newAtTop: 'random',
+    	rate: 150,
+    	maxSprite: 16,
+    	emitterRadius: 50,
+    	emitterCenterLeft: 0,
+    	emitterCenterTop: '50%',
+    	element: '<div></div>',
+    	cssFrom: {
+    		width: 200,
+    		height:15,
+    		maxSize: null,
+    		transform: null,
+    		backgroundColor: 'rgba(219,20,80,1)',
+    		backgroundImage: null,
+    		maskImage: null,
+    		boxShadow: '0 0 50px rgba(219,20,80,1)',
+    		border: null,
+    		borderRadius: 600,
+    		opacity: null
+    	},
+    	cssTo: {
+    		width: 1000,
+            height:200,
+    		maxSize: null,
+    		borderRadius: 600,
+    		backgroundColor: 'rgba(255,255,5,1)',
+    		boxShadow: '0 0 50px rgba(255,255,5,1)',
+    		opacity: 0
+    	}
+    };
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OK create our emitter factory
+    var $emitter1 = $('div#emitterZone1').emitter(optionsPresets.molecules);    
+    
     // Links for controlling emitter
     $('a#start,a#stop').click(function() {
         $emitter1.trigger(this.id); // start || stop
@@ -93,14 +246,14 @@ $(function() { // PAGE DOM READY
         T.frames ++;
         if (T.time > T.timeLastSecond + 1000) {
             T.fps = Math.round((T.frames * 1000) / (T.time - T.timeLastSecond));
-            $('span#sps').html(T.fps+'/s');
+            $('span#sps').html(T.fps+'s/sec');
             T.timeLastSecond = T.time;
             T.frames = 0;
         }
     });
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Move the emitterCenter, when mouse is over
+    // Ex. Move the emitterCenter, when mouse is over
     var offset = $emitter1.offset(),
         mouseIsMove = function(evt) {
             $emitter1.trigger('update', [{ // Pass data through event callback
@@ -127,39 +280,52 @@ $(function() { // PAGE DOM READY
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // EMITTER LIVE EDITOR (only for the demo) ////////////////////////////////////////////////////////
     
-    var createEditor = (function() {
-        
-        // Convert options object to string
-        var options2text = '';
-        for (var k in emitter1Options) {
-            if (typeof emitter1Options[k] == 'object') {
-                options2text += '\t'+k+': {\n';
-                for (var j in emitter1Options[k])
-                    options2text += '\t\t'+j+':\''+emitter1Options[k][j]+'\',\n';
-                options2text = options2text.substr(0, options2text.length - 2)+'\n';
-                options2text += '\t},\n';
-            } else options2text += '\t'+k+': \''+emitter1Options[k]+'\',\n';
-        }
-        options2text = options2text.substr(0, options2text.length - 2)+'\n';
-        
-        // Update
-        var updateEmitter = function(event) {
+    var getQ = function(o) { return (o && typeof o == 'string' ? '\'' : ''); }, // Get Quotes '
+        myObjOptionsToString = function(_options) { // Convert options object to string
+            var txt = '';
+            for (var k in _options) {
+                if (typeof _options[k] == 'object') {
+                    txt += '\t'+k+': {\n';
+                    for (var j in _options[k])
+                        txt += '\t\t'+j+': '+getQ(_options[k][j])+_options[k][j]+getQ(_options[k][j])+',\n';
+                    txt = txt.substr(0, txt.length - 2)+'\n';
+                    txt += '\t},\n';
+                }
+                else txt += '\t'+k+': '+getQ(_options[k])+_options[k]+getQ(_options[k])+',\n';
+            }
+            return 'var options = {\n'+txt.substr(0, txt.length - 2)+'\n};';
+        },
+        textareaUpdateEmitter = function(event) {
             try { eval($(this).val()); } // You can go here for a more secure way to do http://leaverou.me/css3patterns/
             catch(e) {}
             if (options) $emitter1.trigger('update', [options]);
+        },
+        buttonsClickSetOptions = function(event) {
+            var val = $(this).html();
+            if (optionsPresets[val]) {
+                $editor.val(myObjOptionsToString(optionsPresets[val]));
+                $emitter1.trigger('update', [optionsPresets[val]]);
+            }
         };
-        
-        // Append Editor with options as text
-        $editor = $('<textarea id="options" title="Live edit ! Tips : Up/Down arrow to inc values" spellcheck="false">var options = {\n'+options2text+'\n};</textarea>')
-            .bind('keyup', updateEmitter)
-            .appendTo('body');
-        if (window.Incrementable) new Incrementable($editor.get(0));
-        
-    })();
+    
+    // Append Editor with options as text
+    $editor = $('<textarea id="options" spellcheck="false">'+myObjOptionsToString(optionsPresets.molecules)+'</textarea>')
+        .bind('keyup', textareaUpdateEmitter)
+        .appendTo('div#edit');
+    
+    // Create buttons for alls ours PRESETS 
+    for(var k in optionsPresets) {
+        $('<button>'+k+'</button>')
+            .insertAfter($editor)
+            .bind('click', buttonsClickSetOptions);
+    }
+    $('<br />').insertAfter($editor);
+    
+    if (window.Incrementable) new Incrementable($editor.get(0)); // Incrementable plugin
     
 });
-
 </script>
+
 
 </body>
 </html>
