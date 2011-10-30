@@ -77,7 +77,7 @@
     // Use Modernizer : https://github.com/Modernizr/Modernizr/blob/master/modernizr.js
     // Modernizr.prefixed("borderRadius"); // e.g FF3.6 'MozBorderRadius', FF4 'borderRadius'
     $.fn.crossCss = function(css) {
-        return this.each(function() { // I've implemented only the one i need, do yours !
+        return this.each(function() {
             var $this = $(this);
             if (typeof css != 'object') return $this;
             for (var p in css) css[Modernizr.prefixed(p)] = css[p];
@@ -165,7 +165,7 @@
                     options = $.extend(true, {}, options, newOptions);
                     privateMethods.fixDefaultSizes();
                 },
-                // Regenerate emitter : update ALL values
+                // Regenedelay emitter : update ALL values
                 setOptions:function(event, newOptions) { // $emitter1.trigger('update', [{prop:val,...}]);
                     if (_db_) db('setOptions()', newOptions);
                     publicMethods.stop(); // If sprite HTML is modified, must clear old ones
@@ -205,7 +205,7 @@
                     if (options.cssTo.maxSize)
                         options.cssTo.maxSize      = $.getSize(options.cssTo.maxSize, E.canvasW);
                 },
-                // Generate starting CSS
+                // Genedelay starting CSS
                 getCssStart: function() {
                     var css = {};
                     // Starting CSS for sprite, add element inside (default centered) emitter radius
@@ -309,7 +309,7 @@
                                   
                 if (S.index >= 0) { // Manage a sprite
                 
-                    // Generate S.cssStart & S.cssEnd CSS obj with default properties
+                    // Genedelay S.cssStart & S.cssEnd CSS obj with default properties
                     // Animate sprites in the pseudo canvas, with the help of CSS transition
                     // Sprite are created within emitter center radius, now they need dispatching
                     
@@ -375,7 +375,7 @@
                 
                 S = {}; // Reset
                 
-                if (options.rate) E.timer = setTimeout(addSprite, options.rate); // And do it again
+                if (options.delay) E.timer = setTimeout(addSprite, options.delay); // And do it again
                 else              window.requestAnimFrame(addSprite); // As fast as possible - Waiting a "maxSpeed" param :-?
             };
             
@@ -396,7 +396,7 @@
         emitterRadius     : 0,         // '10px' or '50%' // Radius of emitter
         emitterCenterLeft : null,      // '10px' or '50%' // Default to the center of the box
         emitterCenterTop  : null,
-        rate              : null,      // Emission rate in particles per milliseconds // default == Max speed
+        delay             : null,      // Emission delay in particles per milliseconds // default == Max speed
         maxSprite         : 30,        // Max sprites at one moment
         // Particules HTML / CSS
         element           : '<div></div>', // Default sprite is a div

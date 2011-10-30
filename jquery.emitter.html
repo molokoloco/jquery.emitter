@@ -70,7 +70,7 @@ $(function() { // PAGE DOM READY
         effect            : 'nebula',    // 'nebula' or 'artifice'    // Add your custom effect !
         transition        : 'all 3000ms cubic-bezier(.2, .1, .9, 0)', // CSS Animation
         newAtTop          : 'random',    // Last element appear in top of others : 'random' OR bolean
-        rate              : 0,           // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
+        delay              : 0,           // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
         maxSprite         : 100,         // Max sprites at one moment (Each sprite is a new DOM element)
         emitterRadius     : 16,          // 10, '10px' or '50%' // Radius of emitter
         emitterCenterLeft : '50%',       // 10, '10px' or '50%' // Default to the center of the box
@@ -108,7 +108,7 @@ $(function() { // PAGE DOM READY
         "effect": "nebula",
         "transition": "all 2000ms linear",
         "newAtTop": true,
-        "rate": 0,
+        "delay": 0,
         "maxSprite": 250,
         "emitterRadius": 150,
         "emitterCenterLeft": "50%",
@@ -129,7 +129,7 @@ $(function() { // PAGE DOM READY
         "effect": "artifice",
         "transition": "all 2600ms linear",
         "newAtTop": true,
-        "rate": 0,
+        "delay": 0,
         "maxSprite": 200,
         "emitterRadius": "100%",
         "emitterCenterLeft": "50%",
@@ -151,7 +151,7 @@ $(function() { // PAGE DOM READY
         "effect": "nebula",
         "transition": "all 600ms linear",
         "newAtTop": true,
-        "rate": 0,
+        "delay": 0,
         "maxSprite": 500,
         "emitterRadius": 5,
         "emitterCenterLeft": "50%",
@@ -168,7 +168,7 @@ $(function() { // PAGE DOM READY
         "effect": "artifice",
         "transition": "all 4000ms ease-in-out",
         "newAtTop": "random",
-        "rate": 500,
+        "delay": 500,
         "maxSprite": 16,
         "emitterRadius": 50,
         "emitterCenterLeft": "50%",
@@ -191,7 +191,7 @@ $(function() { // PAGE DOM READY
         "effect": "",
         "transition": "all 1500ms ease-in-out",
         "newAtTop": "random",
-        "rate": 0,
+        "delay": 0,
         "maxSprite": 60,
         "emitterRadius": 20,
         "emitterCenterLeft": "50%",
@@ -219,7 +219,7 @@ $(function() { // PAGE DOM READY
         "effect": "artifice",
         "transition": "all 7000ms cubic-bezier(1, 1, 0, 0)",
         "newAtTop": "random",
-        "rate": 500,
+        "delay": 500,
         "maxSprite": 16,
         "emitterRadius": 60,
         "emitterCenterLeft": "50%",
@@ -245,7 +245,7 @@ $(function() { // PAGE DOM READY
         "effect": "nebula",
         "transition": "all 4000ms linear",
         "newAtTop": true,
-        "rate": 900,
+        "delay": 900,
         "maxSprite": 14,
         "emitterRadius": 50,
         "emitterCenterLeft": "0",
@@ -268,7 +268,7 @@ $(function() { // PAGE DOM READY
         "effect": "artifice",
         "transition": "all 2500ms ease-out",
         "newAtTop": true,
-        "rate": 180,
+        "delay": 180,
         "maxSprite": 22,
         "emitterRadius": 20,
         "emitterCenterLeft": "50%",
@@ -292,6 +292,31 @@ $(function() { // PAGE DOM READY
         }
     };
     
+    optionsPresets.hypnoWork = {
+        "effect": "artifice",
+        "transition": "all 2000ms linear",
+        "newAtTop": "random",
+        "delay": 100,
+        "maxSprite": 40,
+        "emitterRadius": "10%",
+        "emitterCenterLeft": "50%",
+        "emitterCenterTop": "50%",
+        "cssFrom": {
+            "width": "20%",
+            "maxSize": "50%",
+            "backgroundImage": "-"+$.getBrowser+"-linear-gradient(-45deg, #FFFD69 25%,transparent 26%,transparent 50%,#FFFD69 51%,#FFFD69 75%,transparent 76%, transparent 100%)",
+            "backgroundSize": "10px 10px",
+            "border": "8px solid #FFFD69",
+            "opacity": 0,
+            "borderRadius": 0
+        },
+        "cssTo": {
+            "width": 1,
+            "border": "1px solid #FFFD69",
+            "borderRadius": 0,
+            "opacity": 1
+        }
+    };
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // OK create our emitter factory
