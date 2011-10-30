@@ -1,10 +1,12 @@
 /*
     // V0.6 - Particules Emitter factory plugin with jQuery & CSS3 
     // MIT License - @molokoloco 28/10/2011 - http://b2bweb.fr
-    // Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
-    // Cloud9ide : http://cloud9ide.com/molokoloco/jquery_emitter
-    // Live Demo V0.6 : http://jsfiddle.net/molokoloco/aqfsC/
-    // Sources : https://github.com/molokoloco/jquery.emitter
+    // Infos      : http://goo.gl/P18db
+	// Plain demo : http://www.b2bweb.fr/framework/jquery.emitter/jquery.emitter.html
+    // Cloud9ide  : http://cloud9ide.com/molokoloco/jquery_emitter
+    // Live demo  : http://jsfiddle.net/molokoloco/aqfsC/
+    // Sources    : https://github.com/molokoloco/jquery.emitter
+	// Download   : http://www.b2bweb.fr/framework/jquery.emitter/jquery.emitter.zip
     
     // Minimalist settings, see explanations in sources comments
     // Ex. :
