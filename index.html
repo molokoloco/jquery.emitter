@@ -1,0 +1,303 @@
+<!--// Remixed by @molokoloco 2011 - http://b2bweb.fr //-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="fr"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=720" />
+    <title>Emitter particules factory with jQuery & CSS3 V0.4</title>
+    <link href="./css/index.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+
+    /* ---- Emitter #1 ---- */
+
+    div#emitterZone1 {
+        position:relative; /* particule sprites childs are abs. positionned inside */
+        margin:0;
+        width:500px;
+        height:300px;
+        background:#333333; /* Solid color for perfs */
+        border:1px solid black;
+        overflow:hidden; /* Crop particule visibility inside box ? */
+    }
+
+    /* You can also choose to apply plain CSS to sprites */
+    /*
+    .sprite {
+        border:1px solid rgba(0,0,0,0.3);
+        border-radius:26px/30px;
+        box-shadow:0 2px 2px rgba(0,0,0,0.3);
+        height: 30px;
+        opacity:0.6;
+        position: absolute;
+        width:26px;
+    }
+    div.sprite:before {
+        background: linear-gradient(top,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,0) 100%);
+            background: -moz-linear-gradient(top,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,0) 100%);
+            background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(255,255,255,1)),color-stop(30%,rgba(255,255,255,1)),color-stop(70%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,0)));
+            background: -webkit-linear-gradient(top,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,0) 100%);
+            background: -o-linear-gradient(top,rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,0) 100%);
+        border-radius:20px;
+        content: "drop";
+        height: 20px;
+        left:4px;
+        position: absolute;
+        text-indent: -9999px;
+        top:2px;
+        width:18px;
+    }
+    div.sprite:after {
+        border-radius:26px;
+        background: linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.5) 100%);
+            background: -moz-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.5) 100%);
+            background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(0,0,0,0)),color-stop(50%,rgba(0,0,0,0)),color-stop(100%,rgba(0,0,0,0.5)));
+            background: -webkit-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.5) 100%);
+            background: -o-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,0.5) 100%);
+        box-shadow:0 2px 0 #fff;
+        content: "drop";
+        height: 24px;
+        left:1px;
+        position: absolute;
+        text-indent: -9999px;
+        top:3px;
+        width:24px;
+    }
+    */
+
+    </style>
+    <script src="./js/modernizr.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <div id="page">
+        <p>
+           jQuery emitter factory of CSS3 sprites with transitions<br />
+           Clash the DOM with the most optimized jQuery plugin on earth ^^
+        </p>
+
+        <div id="emitterZone1">
+            <!--// Here come the Sprites //-->
+        </div>
+
+        <p style="text-align:right">
+            <a href="javascript:void(0);" id="start">Start</a> |
+            <a href="javascript:void(0);" id="stop">Stop</a> |
+            <a href="javascript:void(0);" id="reset" title="Clear elements cache">Reset</a>
+        </p>
+
+        <p id="presets" class="tips">
+            <!--// Here come the effects presets (cf. bottom of this page) (demo) //-->
+        <p>
+
+        <p>Live edit plugin funny emitter properties !<p>
+
+        <div id="edit">
+            <!--// Here come the Editor (demo) //-->
+        </div>
+
+         <p class="tips">
+             <strong>Tips :</strong><br />
+             Up/Down arrow to inc the numbers values in the textarea editable JSON string<br />
+             Add your properties, set unwanted existing ones to "null" (live editor constrain)<br />
+             <em>transition : 'all 3000ms linear'</em> is more fast than <em>'cubic-bezier(0,0,0,0)'</em><br />
+             <em>gradient</em>, <em>boxShadow</em>, <em>pacity</em>, <em>borderRadius</em>... are CPU consumming<br />
+             <br />
+             As i said : <em>Kill your own PC before killing the ones of your visitors</em><br />
+             That a good &quot;STRECSS case&quot; plugin if you overload settings... ^^<br />
+             <br />
+             Questions something to share ? <a href="mailto:molokoloco@gmail.com" id="pause">Contact me</a> → Send yours effects<br />
+             <a href="https://github.com/molokoloco/jquery.emitter" target="_blank">Fork it</a> and get updated on GitHub
+        </p>
+    </div>
+
+    <a href="https://github.com/molokoloco/jquery.emitter" target="_blank" title="Fork me on GitHub" class="ribbon">
+        <img src="http://www.b2bweb.fr/bonus/jx/images/github-ribbon.png" alt="GitHub" width="100" height="100">
+    </a>
+
+    <div class="spacer"></div>
+
+    <!-- jQuery + Emitter Plugin : ".min.js" for minimified version -->
+    <script src="http://code.jquery.com/jquery-1.5.2.min.js" type="text/javascript"></script>
+    <script src="./js/jquery.emitter.mlklc.js" type="text/javascript"></script>
+
+    <!-- For the demo, somes effects presets -->
+    <script src="./js/jquery.emitter.presets.js" type="text/javascript"></script>
+    <!-- Incrementation of values in a textarea editor -->
+    <script src="./js/incrementable.leaverou.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+$(document).ready(function(){ // PAGE DOM READY, CUSTOM SCRIPT EXAMPLE
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // jQuery emitter factory of CSS3 sprites with transitions
+    // V0.6 - @molokoloco 2011 - http://b2bweb.fr
+    // Check $.fn.emitter.options for more infos
+    // Be sure to choose border, background, etc if you want to see something
+    // Infos : http://www.b2bweb.fr/molokoloco/emitter-sprites-particules-factory-with-jquery-css3/
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Some options presets...
+    var optionsPresets = window.optionsPresets || {}; // From ./jquery.emitter.presets.js
+
+    optionsPresets.molecules = { // EXAMPLE #1
+        // EMITTER TYPE
+        effect            : 'nebula',    // nebula, artifice, center or '' // Add your custom effect !
+        transition        : 'all 3000ms cubic-bezier(.2, .1, .9, 0)', // CSS Animation // posssible use of "$.cubicBeziers.easeInOutQuad" ...
+        newAtTop          : 'random',    // Last element appear in top of others : 'random' OR bolean
+        delay             : 0,           // New sprite every ms, Set to 0 for the plugin to use requestFrame (as fast as possible)
+        maxSprite         : 120,         // Max sprites at one moment (Each sprite is a new DOM element)
+        emitterRadius     : 16,          // 10, '10px' or '50%' // Radius of emitter
+        emitterCenterLeft : '50%',       // 10, '10px' or '50%' // Default to the center of the box
+        emitterCenterTop  : '50%',
+        // SPRITES HTML & CSS
+        element           : '<div class="sprite"></div>', // Default sprite is a div, but it can be "body", "a", ...
+        cssFrom           : {            // Properties managed with plugin "Effect" : marginTop, marginLeft, top, left, z-index
+                                         // Other CSS properties allowed, plugin add the correct browser-prefix if needed
+            width             : 8,       // 10, '10px' or '50%' // Radius of a sprite
+            height            : null,
+            maxSize           : 16,      // 10, '10px' or '50%' // Custom plugin propertie, randomize size between width and maxSize ?
+            transform         : null,    // 'rotate(180deg) scale(5) translateX(10px, 0px) skew(-10deg,10deg)',
+            backgroundColor   : null,    // 'rgba(255, 255, 0, 1)',
+            backgroundImage   : '-'+$.browserPrefix+'-radial-gradient(33% 33%, circle cover,rgba(230,230,250,1) 25%,rgba(50,50,70,1) 80%)', // 'url()' or '-moz-radial-gradient()'
+            maskImage         : null,    // gradient, color, ...
+            boxShadow         : '0 0 10px rgba(0,0,0,1)',
+            border            : null,    // '1px dashed rgb(0,0,0)', // buggus with alpha
+            borderRadius      : '50%',   // 10, '10px' or '50%' // Default round with half size radius
+            opacity           : 1
+         },
+         cssTo            : {            // All the "cssFrom" properties are usable : exeption to "backgroundImage", "fontFace" who are not animable
+            width             : 20,
+            height            : null,
+            maxSize           : '60%',   // Ex. 60% >> random width between 20px and 60% of the box size
+            borderRadius      : '50%',   // Round
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OK create our emitter factory
+
+    var effect = optionsPresets.molecules;       // Default
+    var hash   = window.location.hash || null;   // Grab current page anchor
+    if (hash  && optionsPresets[hash.substr(1)]) // We have a reference to effect in a link ?
+        effect = optionsPresets[hash.substr(1)]; // cf. buttonsClickSetOptions()
+
+    var $emitter1 = $('div#emitterZone1').emitter(effect); // Pass options effects to our plugin
+
+    // Links for controlling emitter
+    $('a#start,a#stop,a#reset').click(function() {
+        $emitter1.trigger(this.id);
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Catch new Sprite emit event and display stats (only for the demo)
+    // Inspired from https://github.com/mrdoob/stats.js
+    var now = Date.now(),
+        T = {frames:0, time:now, timeLastSecond:now, fps:0},
+        $stats = $('<div id="sps" title="Sprites/Seconds"></div>').appendTo($emitter1);
+
+    // Bind our emittor emit event
+    $emitter1.bind('emit', function(e, $sprite) {
+        T.time = Date.now();
+        T.frames ++;
+        if (T.time > T.timeLastSecond + 1000) {
+            T.fps = Math.round((T.frames * 1000) / (T.time - T.timeLastSecond));
+            $stats.html(T.fps+'s/sec');
+            T.timeLastSecond = T.time;
+            T.frames = 0;
+        }
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Ex. Move the emitterCenter, when mouse is over
+    var offset = $emitter1.offset(),
+        mouseIsMove = function(evt) {
+            $emitter1.trigger('update', [{ // Pass data through event callback
+                emitterCenterLeft : evt.pageX - offset.left,
+                emitterCenterTop : evt.pageY - offset.top
+            }]);
+        },
+        mouseIsEnter = function(evt) {
+            $emitter1.bind('mousemove', mouseIsMove);
+        },
+        mouseIsLeave = function(evt) {
+            $emitter1.unbind('mousemove', mouseIsMove);
+            $emitter1.trigger('update', [{ // Reset
+                emitterCenterLeft : parseInt($emitter1.width(), 10) / 2,
+                emitterCenterTop : parseInt($emitter1.height(), 10) / 2
+            }]);
+        };
+
+    $emitter1.bind({
+        mouseenter:mouseIsEnter,
+        mouseleave:mouseIsLeave
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // EMITTER LIVE EDITOR (only for the demo) ////////////////////////////////////////////////////////
+    // JSON.parse - http://jsfiddle.net/molokoloco/rSMLU/
+
+    var getQ = function(o) { return (o && typeof o == 'string' ? '\'' : ''); }, // Get Quotes '
+        obj2Json = function(_options) { // Convert "options" js Object to string
+            var txt = '';
+            if (JSON !== 'undefined') txt = JSON.stringify(_options, null, 4);
+            else {
+                for (var k in _options) { // don't catch key:null as sub-obj
+                    if (typeof _options[k] == 'object' && _options[k] !== null) { // Level 2 array ?
+                        txt += '\t'+k+': {\n';
+                        for (var j in _options[k])
+                            txt += '\t\t'+j+': '+getQ(_options[k][j])+_options[k][j]+getQ(_options[k][j])+',\n';
+                        txt = txt.substr(0, txt.length - 2)+'\n';
+                        txt += '\t},\n';
+                    }
+                    else txt += '\t'+k+': '+getQ(_options[k])+_options[k]+getQ(_options[k])+',\n';
+                }
+                txt = '{\n'+txt.substr(0, txt.length - 2)+'\n}';
+            }
+            return txt;
+        },
+        textareaUpdateEmitter = function(event) {
+            var liveOptions = null,
+                val = $.trim($(this).val());
+            if (!val) return;
+            try {
+                if (JSON !== 'undefined') liveOptions = JSON.parse(val);
+                else eval('liveOptions = '+val+';'); // Fallback
+            }
+            catch(e) { db('Parsing error', e); }
+            if (liveOptions) $emitter1.trigger('update', [liveOptions]);
+        },
+        buttonsClickSetOptions = function(event) {
+            event.preventDefault();
+            var effect = this.id.substr(4); // btn_
+            if (optionsPresets[effect]) {
+                $('a.button.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $editor.val(obj2Json(optionsPresets[effect]));
+                $emitter1.trigger('setOptions', [optionsPresets[effect]]);
+                window.location.hash = effect; // Update browser, give link for the effect
+            }
+            return false;
+        };
+
+    // Append Editor with options as text
+    $editor = $('<textarea id="options" spellcheck="false">'+obj2Json(effect)+'</textarea>')
+        .bind('keyup', textareaUpdateEmitter)
+        .appendTo('div#edit');
+
+    // Create buttons for all our PRESETS
+    var btnHtml = [];
+    for(var k in optionsPresets)
+        btnHtml.push('<a id="btn_'+k+'" href="javascript:void(0);" class="button">'+k+'</a>'); // 'a.button'
+
+    $('p#presets').html('Effects presets : '+btnHtml.join(', '));
+    $('body').delegate('a.button', 'click', buttonsClickSetOptions);
+
+    //if (window.Incrementable) new Incrementable($editor.get(0)); // Incrementable plugin
+});
+</script>
+</body>
+</html>
