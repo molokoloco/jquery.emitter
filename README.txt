@@ -1,3 +1,5 @@
+[UPDATE : Work in progress in the NEW place https://github.com/molokoloco/jQuery.boxFx]
+
 // V0.7 - Particules Emitter factory plugin with jQuery & CSS3 
 // MIT License - @molokoloco 28/10/2011 - http://b2bweb.fr
 // Infos      : http://goo.gl/P18db
